@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PersonalSchedule {
+public class PersonalScheduleApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PersonalSchedule.class, args);
+        SpringApplication.run(PersonalScheduleApplication.class, args);
     }
 }
