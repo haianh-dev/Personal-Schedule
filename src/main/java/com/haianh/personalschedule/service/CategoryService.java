@@ -33,7 +33,8 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         existingCategory.setName(category.getName());
-        existingCategory.setColorCode(category.getColorCode());
+        existingCategory.setColor(category.getColor());
+        existingCategory.setDescription(category.getDescription());
 
         return categoryRepository.save(existingCategory);
     }
