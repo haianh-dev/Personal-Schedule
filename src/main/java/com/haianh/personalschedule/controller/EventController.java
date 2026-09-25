@@ -4,6 +4,8 @@ import com.haianh.personalschedule.entity.Event;
 import com.haianh.personalschedule.service.EventService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.haianh.personalschedule.dto.EventRequest;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -30,18 +32,18 @@ public class EventController {
     }
 
     @PostMapping
-    public Event createEvent(@RequestBody Event event) {
-        return eventService.createEvent(event);
+    public Event createEvent(@Valid @RequestBody EventRequest request) {
+        return eventService.createEvent(request);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Event> updateEvent(
             @PathVariable Long id,
-            @RequestBody Event event) {
+            @Valid @RequestBody EventRequest request) {
 
         try {
             return ResponseEntity.ok(
-                    eventService.updateEvent(id, event));
+                    eventService.updateEvent(id, request));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

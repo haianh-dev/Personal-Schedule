@@ -1,6 +1,9 @@
 package com.haianh.personalschedule.service;
 
+import com.haianh.personalschedule.dto.EventRequest;
+import com.haianh.personalschedule.entity.Category;
 import com.haianh.personalschedule.entity.Event;
+import com.haianh.personalschedule.repository.CategoryRepository;
 import com.haianh.personalschedule.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +14,14 @@ import java.util.Optional;
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final CategoryRepository categoryRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(
+            EventRepository eventRepository,
+            CategoryRepository categoryRepository) {
+
         this.eventRepository = eventRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public List<Event> getAllEvents() {
@@ -24,19 +32,53 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
-    public Event createEvent(Event event) {
+    public Event createEvent(EventRequest request) {
+
+        // 1. Kiểm tra thời gian
+        if (!request.getStartTime().isBefore(request.getEndTime())) {
+            throw new RuntimeException(
+                    "Start time must be before end time"
+            );
+        }
+
+        // 2. Tìm Category
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // 3. Tạo Entity
+        Event event = new Event();
+
+        event.setTitle(request.getTitle());
+        event.setLocation(request.getLocation());
+        event.setStartTime(request.getStartTime());
+        event.setEndTime(request.getEndTime());
+        event.setCategory(category);
+
+        // 4. Lưu database
         return eventRepository.save(event);
     }
 
-    public Event updateEvent(Long id, Event event) {
+    public Event updateEvent(Long id, EventRequest request) {
+
         Event existingEvent = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        existingEvent.setTitle(event.getTitle());
-        existingEvent.setLocation(event.getLocation());
-        existingEvent.setStartTime(event.getStartTime());
-        existingEvent.setEndTime(event.getEndTime());
-        existingEvent.setCategory(event.getCategory());
+        // Kiểm tra thời gian
+        if (!request.getStartTime().isBefore(request.getEndTime())) {
+            throw new RuntimeException(
+                    "Start time must be before end time"
+            );
+        }
+
+        // Tìm Category
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        existingEvent.setTitle(request.getTitle());
+        existingEvent.setLocation(request.getLocation());
+        existingEvent.setStartTime(request.getStartTime());
+        existingEvent.setEndTime(request.getEndTime());
+        existingEvent.setCategory(category);
 
         return eventRepository.save(existingEvent);
     }
