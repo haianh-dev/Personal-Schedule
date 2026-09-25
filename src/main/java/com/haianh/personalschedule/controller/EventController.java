@@ -41,12 +41,8 @@ public class EventController {
             @PathVariable Long id,
             @Valid @RequestBody EventRequest request) {
 
-        try {
-            return ResponseEntity.ok(
-                    eventService.updateEvent(id, request));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(
+                eventService.updateEvent(id, request));
     }
 
     @DeleteMapping("/{id}")

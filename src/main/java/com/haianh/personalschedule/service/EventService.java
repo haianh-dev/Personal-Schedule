@@ -6,6 +6,8 @@ import com.haianh.personalschedule.entity.Event;
 import com.haianh.personalschedule.repository.CategoryRepository;
 import com.haianh.personalschedule.repository.EventRepository;
 import org.springframework.stereotype.Service;
+import com.haianh.personalschedule.exception.BadRequestException;
+import com.haianh.personalschedule.exception.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,14 +38,14 @@ public class EventService {
 
         // 1. Kiểm tra thời gian
         if (!request.getStartTime().isBefore(request.getEndTime())) {
-            throw new RuntimeException(
+            throw new BadRequestException(
                     "Start time must be before end time"
             );
         }
 
         // 2. Tìm Category
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         // 3. Tạo Entity
         Event event = new Event();
@@ -61,18 +63,18 @@ public class EventService {
     public Event updateEvent(Long id, EventRequest request) {
 
         Event existingEvent = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
 
         // Kiểm tra thời gian
         if (!request.getStartTime().isBefore(request.getEndTime())) {
-            throw new RuntimeException(
+            throw new BadRequestException(
                     "Start time must be before end time"
             );
         }
 
         // Tìm Category
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         existingEvent.setTitle(request.getTitle());
         existingEvent.setLocation(request.getLocation());
