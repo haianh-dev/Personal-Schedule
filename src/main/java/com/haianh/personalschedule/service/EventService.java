@@ -47,7 +47,20 @@ public class EventService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-        // 3. Tạo Entity
+        // 3. Kiểm tra trùng lặp
+        boolean overlapping = eventRepository
+        .existsByStartTimeLessThanAndEndTimeGreaterThan(
+                request.getEndTime(),
+                request.getStartTime()
+        );
+
+        if (overlapping) {
+            throw new BadRequestException(
+                    "Event overlaps with an existing event"
+            );
+        }
+
+        // 4. Tạo Entity
         Event event = new Event();
 
         event.setTitle(request.getTitle());
@@ -56,7 +69,7 @@ public class EventService {
         event.setEndTime(request.getEndTime());
         event.setCategory(category);
 
-        // 4. Lưu database
+        // 5. Lưu database
         return eventRepository.save(event);
     }
 
