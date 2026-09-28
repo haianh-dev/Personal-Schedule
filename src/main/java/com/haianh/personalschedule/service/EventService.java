@@ -97,8 +97,4 @@ public class EventService {
 
         return eventRepository.save(existingEvent);
     }
-
-    public void deleteEvent(Long id) {
-        eventRepository.deleteById(id);
-    }
 }
