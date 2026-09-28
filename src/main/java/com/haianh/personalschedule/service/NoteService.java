@@ -65,4 +65,13 @@ public class NoteService {
 
         noteRepository.deleteById(id);
     }
+
+    public List<Note> getNotesByEventId(Long eventId) {
+
+        if (!eventRepository.existsById(eventId)) {
+            throw new ResourceNotFoundException("Event not found");
+        }
+
+        return noteRepository.findByEventId(eventId);
+    }
 }

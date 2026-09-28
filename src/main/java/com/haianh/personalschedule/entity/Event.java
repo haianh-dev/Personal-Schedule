@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Entity đại diện cho bảng "events" (Sự kiện / Lịch trình cá nhân).
@@ -25,7 +26,8 @@ public class Event {
 
     /**
      * Chi tiết, ghi chú của sự kiện.
-     * Sử dụng TEXT để có thể lưu trữ nội dung dài mà không bị giới hạn 255 ký tự như VARCHAR mặc định.
+     * Sử dụng TEXT để có thể lưu trữ nội dung dài mà không bị giới hạn 255 ký tự
+     * như VARCHAR mặc định.
      */
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -43,8 +45,10 @@ public class Event {
 
     /**
      * Quan hệ N-1 (Many-to-One): Nhiều sự kiện thuộc về 1 danh mục.
-     * - fetch = FetchType.LAZY: Tối ưu hiệu năng, chỉ load Category khi thực sự cần dùng.
-     * - @JoinColumn(name = "category_id"): Tên cột khóa ngoại trong bảng `events` tham chiếu tới `categories(id)`.
+     * - fetch = FetchType.LAZY: Tối ưu hiệu năng, chỉ load Category khi thực sự cần
+     * dùng.
+     * - @JoinColumn(name = "category_id"): Tên cột khóa ngoại trong bảng `events`
+     * tham chiếu tới `categories(id)`.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -73,7 +77,8 @@ public class Event {
     }
 
     // Constructor tiện ích
-    public Event(String title, String description, String location, LocalDateTime startTime, LocalDateTime endTime, Category category) {
+    public Event(String title, String description, String location, LocalDateTime startTime, LocalDateTime endTime,
+            Category category) {
         this.title = title;
         this.description = description;
         this.location = location;
@@ -158,4 +163,7 @@ public class Event {
                 ", endTime=" + endTime +
                 '}';
     }
+
+    @OneToMany(mappedBy = "event")
+    private List<Note> notes;
 }

@@ -30,6 +30,13 @@ public class NoteController {
                 noteService.getNoteById(id));
     }
 
+    @GetMapping("/event/{eventId}")
+    public List<Note> getNotesByEventId(
+            @PathVariable Long eventId) {
+
+        return noteService.getNotesByEventId(eventId);
+    }
+
     @PostMapping
     public ResponseEntity<Note> createNote(
             @RequestParam Long eventId,
