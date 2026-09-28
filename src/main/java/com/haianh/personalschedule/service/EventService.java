@@ -39,8 +39,7 @@ public class EventService {
         // 1. Kiểm tra thời gian
         if (!request.getStartTime().isBefore(request.getEndTime())) {
             throw new BadRequestException(
-                    "Start time must be before end time"
-            );
+                    "Start time must be before end time");
         }
 
         // 2. Tìm Category
@@ -49,15 +48,13 @@ public class EventService {
 
         // 3. Kiểm tra trùng lặp
         boolean overlapping = eventRepository
-        .existsByStartTimeLessThanAndEndTimeGreaterThan(
-                request.getEndTime(),
-                request.getStartTime()
-        );
+                .existsByStartTimeLessThanAndEndTimeGreaterThan(
+                        request.getEndTime(),
+                        request.getStartTime());
 
         if (overlapping) {
             throw new BadRequestException(
-                    "Event overlaps with an existing event"
-            );
+                    "Event overlaps with an existing event");
         }
 
         // 4. Tạo Entity
@@ -75,20 +72,33 @@ public class EventService {
 
     public Event updateEvent(Long id, EventRequest request) {
 
+        // 1. Kiểm tra Event có tồn tại không
         Event existingEvent = eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
 
-        // Kiểm tra thời gian
+        // 2. Kiểm tra thời gian
         if (!request.getStartTime().isBefore(request.getEndTime())) {
             throw new BadRequestException(
-                    "Start time must be before end time"
-            );
+                    "Start time must be before end time");
         }
 
-        // Tìm Category
+        // 3. Kiểm tra Category
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
+        // 4. Kiểm tra trùng với Event KHÁC
+        boolean overlapping = eventRepository
+                .existsByIdNotAndStartTimeLessThanAndEndTimeGreaterThan(
+                        id,
+                        request.getEndTime(),
+                        request.getStartTime());
+
+        if (overlapping) {
+            throw new BadRequestException(
+                    "Event overlaps with an existing event");
+        }
+
+        // 5. Cập nhật Event
         existingEvent.setTitle(request.getTitle());
         existingEvent.setLocation(request.getLocation());
         existingEvent.setStartTime(request.getStartTime());
@@ -96,5 +106,9 @@ public class EventService {
         existingEvent.setCategory(category);
 
         return eventRepository.save(existingEvent);
+    }
+
+    public void deleteEvent(Long id) {
+        eventRepository.deleteById(id);
     }
 }

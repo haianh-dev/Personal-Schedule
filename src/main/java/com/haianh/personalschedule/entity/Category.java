@@ -1,6 +1,7 @@
 package com.haianh.personalschedule.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -8,6 +9,10 @@ import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties({
+        "hibernateLazyInitializer",
+        "handler"
+})
 /**
  * Entity đại diện cho bảng "categories" (Danh mục lịch trình / sự kiện).
  * Ví dụ: Công việc (Work), Học tập (Study), Cá nhân (Personal), v.v.
@@ -36,9 +41,12 @@ public class Category {
 
     /**
      * Quan hệ 1-N (One-to-Many): Một danh mục có thể chứa nhiều sự kiện.
-     * - mappedBy = "category": Cho biết trường `category` bên phía Entity Event làm chủ quan hệ (Foreign Key).
-     * - cascade = CascadeType.ALL: Khi thao tác với Category thì các Event con cũng được áp dụng tương ứng.
-     * - @JsonIgnore: Cực kỳ quan trọng để ngăn chặn lỗi lặp vô tận (Infinite Recursion) khi Jackson chuyển đổi đối tượng sang JSON.
+     * - mappedBy = "category": Cho biết trường `category` bên phía Entity Event làm
+     * chủ quan hệ (Foreign Key).
+     * - cascade = CascadeType.ALL: Khi thao tác với Category thì các Event con cũng
+     * được áp dụng tương ứng.
+     * - @JsonIgnore: Cực kỳ quan trọng để ngăn chặn lỗi lặp vô tận (Infinite
+     * Recursion) khi Jackson chuyển đổi đối tượng sang JSON.
      */
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
